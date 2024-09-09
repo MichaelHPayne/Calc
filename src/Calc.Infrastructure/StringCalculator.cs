@@ -10,7 +10,24 @@ namespace Calc.Infrastructure
             {
                 return 0;
             }
-            throw new NotImplementedException();
+
+            string[] numberArray = numbers.Split(',');
+
+            if (numberArray.Length > 2)
+            {
+                throw new ArgumentException("More than 2 numbers are not allowed.");
+            }
+
+            int sum = 0;
+            foreach (string number in numberArray)
+            {
+                if (int.TryParse(number, out int parsedNumber))
+                {
+                    sum += parsedNumber;
+                }
+            }
+
+            return sum;
         }
     }
 }

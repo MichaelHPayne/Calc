@@ -1,4 +1,5 @@
 using Calc.Core.Interfaces;
+using System.Linq;
 
 namespace Calc.Infrastructure
 {
@@ -11,7 +12,8 @@ namespace Calc.Infrastructure
                 return 0;
             }
 
-            return numbers.Split(',')
+            var delimiters = new[] { ',', '\n' };
+            return numbers.Split(delimiters)
                           .Select(n => int.TryParse(n, out int num) ? num : 0)
                           .Sum();
         }

@@ -19,17 +19,14 @@ namespace Calc.ConsoleApp
 
             TestCalculator(calculator, "");
             TestCalculator(calculator, "1");
-            TestCalculator(calculator, "20");
-            TestCalculator(calculator, "1,5000");
-            TestCalculator(calculator, "4,-3");
-            TestCalculator(calculator, "5,");
-            TestCalculator(calculator, "5,tytyt");
-            TestCalculator(calculator, "1,2,3");
-            TestCalculator(calculator, "1,2,3,4,5,6,7,8,9,10");
+            TestCalculator(calculator, "1,2");
+            TestCalculator(calculator, "1\n2,3");
+            TestCalculator(calculator, "1,2\n3,4\n5");
+            TestCalculator(calculator, "1\n2\n3\n4\n5");
             
-            // Test with 100 numbers
-            string manyNumbers = string.Join(",", Enumerable.Range(1, 100));
-            TestCalculator(calculator, manyNumbers);
+            // Test with mixed delimiters
+            string mixedInput = string.Join("\n", Enumerable.Range(1, 5)) + "," + string.Join(",", Enumerable.Range(6, 5));
+            TestCalculator(calculator, mixedInput);
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();

@@ -70,5 +70,23 @@ namespace Calc.Infrastructure.Tests
             int result = _calculator.Add(input);
             Assert.Equal(500500, result); // Sum of numbers from 1 to 1000
         }
+
+        [Theory]
+        [InlineData("1\n2,3", 6)]
+        [InlineData("1,2\n3", 6)]
+        [InlineData("1\n2\n3", 6)]
+        public void Add_NewlineDelimiter_ReturnsSum(string input, int expected)
+        {
+            int result = _calculator.Add(input);
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Add_MixedDelimiters_ReturnsSum()
+        {
+            string input = string.Join("\n", Enumerable.Range(1, 50)) + "," + string.Join(",", Enumerable.Range(51, 50));
+            int result = _calculator.Add(input);
+            Assert.Equal(5050, result); // Sum of numbers from 1 to 100
+        }        
     }
 }

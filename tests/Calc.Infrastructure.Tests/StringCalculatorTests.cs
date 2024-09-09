@@ -2,7 +2,6 @@ using Xunit;
 using Calc.Core.Interfaces;
 using Calc.Core.Exceptions;
 using Calc.Infrastructure;
-using Calc.Infrastructure;
 using Calc.Infrastructure.DelimiterStrategies;
 using System.Linq;
 
@@ -22,7 +21,7 @@ namespace Calc.Infrastructure.Tests
             var defaultStrategy = new DefaultDelimiterStrategy();
             var singleCharStrategy = new SingleCharCustomDelimiterStrategy();
             var delimiterFactory = new DelimiterStrategyFactory(defaultStrategy, singleCharStrategy);
-            var inputParser = new InputParser(delimiterFactory);
+            var inputParser = new InputParser(delimiterFactory, defaultStrategy);
             return new StringCalculator(inputParser);
         }
 

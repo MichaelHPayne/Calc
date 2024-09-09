@@ -30,12 +30,12 @@ public class InputParser
                 // Check if the custom delimiter is actually used in the number string
                 if (numberString.Contains(customDelimiter))
                 {
-                    return strategy.Split(numberString.Replace("\n", customDelimiter));
+                    return strategy.Split(numberString);
                 }
             }
         }
 
         // Use default strategy for all other cases, including malformed custom delimiter inputs
-        return _defaultStrategy.Split(input);
+        return _defaultStrategy.Split(input.Contains("\n") ? input.Replace("\n", ",") : input);
     }
 }

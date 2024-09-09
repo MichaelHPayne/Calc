@@ -1,5 +1,6 @@
 using Xunit;
 using Calc.Core.Interfaces;
+using Calc.Core.Exceptions;
 using Calc.Infrastructure;
 using System.Linq;
 
@@ -32,7 +33,6 @@ namespace Calc.Infrastructure.Tests
 
         [Theory]
         [InlineData("1,5000", 5001)]
-        [InlineData("4,-3", 1)]
         public void Add_TwoNumbers_ReturnsSum(string input, int expected)
         {
             int result = _calculator.Add(input);
@@ -87,6 +87,33 @@ namespace Calc.Infrastructure.Tests
             string input = string.Join("\n", Enumerable.Range(1, 50)) + "," + string.Join(",", Enumerable.Range(51, 50));
             int result = _calculator.Add(input);
             Assert.Equal(5050, result); // Sum of numbers from 1 to 100
-        }        
+        }
+
+        [Fact]
+        public void Add_NegativeNumbers_ThrowsNegativeNumberException()
+        {
+            var exception = Assert.Throws<NegativeNumberException>(() => _calculator.Add("1,-2,3,-4,5,-6"));
+            Assert.Equal(new[] { -2, -4, -6 }, exception.NegativeNumbers);
+            Assert.Contains("Negatives not allowed:", exception.Message);
+            Assert.Contains("-2", exception.Message);
+            Assert.Contains("-4", exception.Message);
+            Assert.Contains("-6", exception.Message);
+        }
+
+        [Fact]
+        public void Add_SingleNegativeNumber_ThrowsNegativeNumberException()
+        {
+            var exception = Assert.Throws<NegativeNumberException>(() => _calculator.Add("-1"));
+            Assert.Equal(new[] { -1 }, exception.NegativeNumbers);
+            Assert.Contains("Negatives not allowed:", exception.Message);
+            Assert.Contains("-1", exception.Message);
+        }
+
+        [Fact]
+        public void Add_NoNegativeNumbers_DoesNotThrowException()
+        {
+            int result = _calculator.Add("1,2,3");
+            Assert.Equal(6, result);
+        }
     }
 }

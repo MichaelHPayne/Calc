@@ -1,4 +1,5 @@
 using Calc.Core.Interfaces;
+using Calc.Core.Exceptions;
 using System.Linq;
 
 namespace Calc.Infrastructure
@@ -13,9 +14,17 @@ namespace Calc.Infrastructure
             }
 
             var delimiters = new[] { ',', '\n' };
-            return numbers.Split(delimiters)
-                          .Select(n => int.TryParse(n, out int num) ? num : 0)
-                          .Sum();
+            var numberList = numbers.Split(delimiters)
+                                    .Select(n => int.TryParse(n, out int num) ? num : 0)
+                                    .ToList();
+
+            var negativeNumbers = numberList.Where(n => n < 0).ToList();
+            if (negativeNumbers.Any())
+            {
+                throw new NegativeNumberException(negativeNumbers);
+            }
+
+            return numberList.Sum();
         }
     }
 }

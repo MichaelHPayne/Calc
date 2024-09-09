@@ -5,7 +5,7 @@ namespace Calc.Infrastructure.DelimiterStrategies
 {
     public class SingleCharCustomDelimiterStrategy : ISingleCharCustomDelimiterStrategy
     {
-        private string _delimiter;
+        private string _delimiter = ",";
 
         public ISingleCharCustomDelimiterStrategy WithDelimiter(string delimiter)
         {

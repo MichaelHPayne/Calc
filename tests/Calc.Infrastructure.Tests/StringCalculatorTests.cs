@@ -1,7 +1,7 @@
 using Xunit;
 using Calc.Core.Interfaces;
 using Calc.Core.Exceptions;
-using Calc.Core.Factories;
+using Calc.Infrastructure;
 using Calc.Infrastructure;
 using Calc.Infrastructure.DelimiterStrategies;
 using System.Linq;

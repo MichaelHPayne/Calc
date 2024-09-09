@@ -31,14 +31,6 @@ namespace Calc.Infrastructure.Tests
             Assert.Equal(expected, result);
         }
 
-        [Theory]
-        [InlineData("1,5000", 5001)]
-        public void Add_TwoNumbers_ReturnsSum(string input, int expected)
-        {
-            int result = _calculator.Add(input);
-            Assert.Equal(expected, result);
-        }
-
         [Fact]
         public void Add_MissingNumber_TreatsAsZero()
         {
@@ -115,5 +107,31 @@ namespace Calc.Infrastructure.Tests
             int result = _calculator.Add("1,2,3");
             Assert.Equal(6, result);
         }
+
+        [Theory]
+        [InlineData("2,1001,6", 8)]
+        [InlineData("1000,2,3", 1005)]
+        [InlineData("999,1001,2", 1001)]
+        [InlineData("1,2,3,1001,4,1002,5", 15)]
+        [InlineData("5,1001", 5)]  // New test case for two numbers with one > 1000
+        public void Add_NumbersGreaterThan1000_AreIgnored(string input, int expected)
+        {
+            int result = _calculator.Add(input);
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Add_AllNumbersGreaterThan1000_ReturnsZero()
+        {
+            int result = _calculator.Add("1001,2000,3000");
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void Add_MixOfValidAndInvalidNumbers_ReturnsCorrectSum()
+        {
+            int result = _calculator.Add("1,1001,2,1002,3,1003,4");
+            Assert.Equal(10, result);
+        }        
     }
 }

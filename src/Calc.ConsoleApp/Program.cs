@@ -18,35 +18,28 @@ namespace Calc.ConsoleApp
             Console.WriteLine("String Calculator Demo");
             Console.WriteLine("---------------------");
 
-            // Requirement 1: Basic addition with up to 2 numbers
+            // Previous requirements
             TestCalculator(calculator, "");
             TestCalculator(calculator, "1");
             TestCalculator(calculator, "1,2");
             TestCalculator(calculator, "5,tytyt");
-
-            // Requirement 2: Remove 2-number constraint
             TestCalculator(calculator, "1,2,3");
             TestCalculator(calculator, "1,2,3,4,5");
-            TestCalculator(calculator, "1,2,3,4,5,6,7,8,9,10,11,12");
-
-            // Test with many numbers
-            string manyNumbers = string.Join(",", Enumerable.Range(1, 100));
-            TestCalculator(calculator, manyNumbers);
-
-            // Requirement 3: Support newline as delimiter
             TestCalculator(calculator, "1\n2,3");
             TestCalculator(calculator, "1,2\n3");
-            TestCalculator(calculator, "1\n2\n3");
-
-            // Test with mixed delimiters
-            string mixedInput = string.Join("\n", Enumerable.Range(1, 5)) + "," + string.Join(",", Enumerable.Range(6, 5));
-            TestCalculator(calculator, mixedInput);
-
-            // Requirement 4: Deny negative numbers
             TestCalculator(calculator, "-1");
             TestCalculator(calculator, "1,-2,3");
-            TestCalculator(calculator, "-1,-2,-3");
-            TestCalculator(calculator, "1,2,-3,4,-5,6");
+
+            // Requirement 5: Make any value greater than 1000 an invalid number
+            Console.WriteLine("\nRequirement 5: Numbers greater than 1000 are ignored");
+            Console.WriteLine("---------------------------------------------------");
+            TestCalculator(calculator, "2,1001,6");
+            TestCalculator(calculator, "1000,2,3");
+            TestCalculator(calculator, "999,1001,2");
+            TestCalculator(calculator, "1,2,3,1001,4,1002,5");
+            TestCalculator(calculator, "5,1001");
+            TestCalculator(calculator, "1001,2000,3000");
+            TestCalculator(calculator, "1,1001,2,1002,3,1003,4");
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>

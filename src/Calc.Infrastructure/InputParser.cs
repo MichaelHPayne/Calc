@@ -11,8 +11,8 @@ namespace Calc.Infrastructure
 
         public InputParser(IDelimiterStrategyFactory delimiterStrategyFactory, IDefaultDelimiterStrategy defaultDelimiterStrategy)
         {
-            _delimiterStrategyFactory = delimiterStrategyFactory;
-            _defaultDelimiterStrategy = defaultDelimiterStrategy;
+            _delimiterStrategyFactory = delimiterStrategyFactory ?? throw new ArgumentNullException(nameof(delimiterStrategyFactory));
+            _defaultDelimiterStrategy = defaultDelimiterStrategy ?? throw new ArgumentNullException(nameof(defaultDelimiterStrategy));
         }
 
         public string[] Parse(string input)

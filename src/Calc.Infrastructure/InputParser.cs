@@ -30,7 +30,7 @@ public class InputParser
             }
         }
 
-        // Use default strategy for all other cases
+        // Use default strategy for all other cases, including malformed custom delimiter inputs
         return _defaultStrategy.Split(input);
     }
 }

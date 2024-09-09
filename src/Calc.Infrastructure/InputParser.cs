@@ -18,7 +18,7 @@ public class InputParser
             return new string[0];
         }
 
-        if (input.StartsWith("//"))
+        if (input.StartsWith("//") && input.Length > 3)
         {
             int newLineIndex = input.IndexOf('\n');
             if (newLineIndex > 2 && newLineIndex < input.Length - 1)
@@ -26,7 +26,7 @@ public class InputParser
                 string customDelimiter = input.Substring(2, newLineIndex - 2);
                 string numberString = input.Substring(newLineIndex + 1);
                 var strategy = _delimiterStrategyFactory.CreateStrategy(customDelimiter);
-                return strategy.Split(numberString);
+                return strategy.Split(numberString.Replace("\n", customDelimiter));
             }
         }
 

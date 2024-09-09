@@ -26,7 +26,12 @@ public class InputParser
                 string customDelimiter = input.Substring(2, newLineIndex - 2);
                 string numberString = input.Substring(newLineIndex + 1);
                 var strategy = _delimiterStrategyFactory.CreateStrategy(customDelimiter);
-                return strategy.Split(numberString.Replace("\n", customDelimiter));
+                
+                // Check if the custom delimiter is actually used in the number string
+                if (numberString.Contains(customDelimiter))
+                {
+                    return strategy.Split(numberString.Replace("\n", customDelimiter));
+                }
             }
         }
 

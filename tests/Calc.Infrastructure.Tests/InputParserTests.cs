@@ -1,7 +1,6 @@
 using Xunit;
 using Calc.Infrastructure;
 using Calc.Infrastructure.DelimiterStrategies;
-using Calc.Infrastructure.Factories;
 
 namespace Calc.Infrastructure.Tests
 {
@@ -11,9 +10,10 @@ namespace Calc.Infrastructure.Tests
 
         public InputParserTests()
         {
-            var delimiterStrategyFactory = new DefaultDelimiterStrategyFactory();
-            var defaultDelimiterStrategy = new DefaultDelimiterStrategy();
-            _parser = new InputParser(delimiterStrategyFactory, defaultDelimiterStrategy);
+            var defaultStrategy = new DefaultDelimiterStrategy();
+            var singleCharStrategy = new SingleCharCustomDelimiterStrategy();
+            var delimiterStrategyFactory = new DelimiterStrategyFactory(defaultStrategy, singleCharStrategy);
+            _parser = new InputParser(delimiterStrategyFactory, defaultStrategy);
         }
 
         [Theory]

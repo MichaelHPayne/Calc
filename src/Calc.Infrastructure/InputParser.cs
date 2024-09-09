@@ -1,41 +1,29 @@
-using Calc.Core.Interfaces;
+using System;
+using System.Text.RegularExpressions;
 
-public class InputParser
+namespace Calc.Infrastructure
 {
-    private readonly IDelimiterStrategyFactory _delimiterStrategyFactory;
-    private readonly IDefaultDelimiterStrategy _defaultStrategy;
-
-    public InputParser(IDelimiterStrategyFactory delimiterStrategyFactory, IDefaultDelimiterStrategy defaultStrategy)
+    public class InputParser
     {
-        _delimiterStrategyFactory = delimiterStrategyFactory;
-        _defaultStrategy = defaultStrategy;
-    }
-
-    public string[] Parse(string input)
-    {
-        if (string.IsNullOrEmpty(input))
+        public string[] Parse(string input)
         {
-            return new string[0];
-        }
-
-        if (input.StartsWith("//") && input.Length > 3)
-        {
-            int newLineIndex = input.IndexOf('\n');
-            if (newLineIndex > 2 && newLineIndex < input.Length - 1)
+            if (string.IsNullOrEmpty(input))
             {
-                string customDelimiter = input.Substring(2, newLineIndex - 2);
-                string numberString = input.Substring(newLineIndex + 1);
-                var strategy = _delimiterStrategyFactory.CreateStrategy(customDelimiter);
-                
-                // Check if the custom delimiter is actually used in the number string
-                if (numberString.Contains(customDelimiter))
+                return Array.Empty<string>();
+            }
+
+            if (input.StartsWith("//"))
+            {
+                var match = Regex.Match(input, @"^//(.)\n(.*)$");
+                if (match.Success)
                 {
-                    return strategy.Split(numberString);
+                    var delimiter = match.Groups[1].Value;
+                    var numbers = match.Groups[2].Value;
+                    return numbers.Split(new[] { delimiter }, StringSplitOptions.None);
                 }
             }
-        }
 
-        // Use default strategy for all other cases, including malformed custom delimiter inputs
-        return _defaultStrategy.Split(input.Contains("\n") ? input.Replace("\n", ",") : input);
+            return input.Split(new[] { ',', '\n' }, StringSplitOptions.None);
+        }
     }
 }

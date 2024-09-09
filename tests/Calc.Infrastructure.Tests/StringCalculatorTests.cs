@@ -1,7 +1,9 @@
 using Xunit;
 using Calc.Core.Interfaces;
 using Calc.Core.Exceptions;
+using Calc.Core.Factories;
 using Calc.Infrastructure;
+using Calc.Infrastructure.DelimiterStrategies;
 using System.Linq;
 
 namespace Calc.Infrastructure.Tests
@@ -12,7 +14,16 @@ namespace Calc.Infrastructure.Tests
 
         public StringCalculatorTests()
         {
-            _calculator = new StringCalculator();
+            _calculator = CreateCalculator();
+        }
+
+        private static IStringCalculator CreateCalculator()
+        {
+            var defaultStrategy = new DefaultDelimiterStrategy();
+            var singleCharStrategy = new SingleCharCustomDelimiterStrategy();
+            var delimiterFactory = new DelimiterStrategyFactory(defaultStrategy, singleCharStrategy);
+            var inputParser = new InputParser(delimiterFactory);
+            return new StringCalculator(inputParser);
         }
 
         [Fact]
@@ -133,5 +144,55 @@ namespace Calc.Infrastructure.Tests
             int result = _calculator.Add("1,1001,2,1002,3,1003,4");
             Assert.Equal(10, result);
         }        
+
+                [Theory]
+        [InlineData("//;\n1;2", 3)]
+        [InlineData("//#\n2#5", 7)]
+        [InlineData("//,\n2,ff,100", 102)]
+        public void Add_SingleCharCustomDelimiter_ReturnsSum(string input, int expected)
+        {
+            int result = _calculator.Add(input);
+            Assert.Equal(expected, result);
+        }
+
+        [Fact]
+        public void Add_SingleCharCustomDelimiter_WithNewlineInNumbers_ReturnsSum()
+        {
+            int result = _calculator.Add("//;\n1;2\n3");
+            Assert.Equal(6, result);
+        }
+
+        [Fact]
+        public void Add_SingleCharCustomDelimiter_WithNegativeNumbers_ThrowsException()
+        {
+            var exception = Assert.Throws<NegativeNumberException>(
+                () => _calculator.Add("//;\n1;-2;3;-4;5;-6")
+            );
+            Assert.Equal(new[] { -2, -4, -6 }, exception.NegativeNumbers);
+        }
+
+        [Fact]
+        public void Add_SingleCharCustomDelimiter_WithNumbersOver1000_IgnoresLargeNumbers()
+        {
+            int result = _calculator.Add("//;\n1;2;1001;3");
+            Assert.Equal(6, result);
+        }
+
+        [Fact]
+        public void Add_SingleCharCustomDelimiter_EmptyInput_ReturnsZero()
+        {
+            int result = _calculator.Add("//;\n");
+            Assert.Equal(0, result);
+        }
+
+        [Theory]
+        [InlineData("//\n1,2,3")]
+        [InlineData("//;\n1,2;3")]
+        [InlineData("//;\n1\n2;3")]
+        public void Add_MalformedCustomDelimiterInput_UsesDefaultDelimiter(string input)
+        {
+            int result = _calculator.Add(input);
+            Assert.Equal(6, result);
+        }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Calc.Core.Interfaces;
 using Calc.Infrastructure;
 using System;
+using System.Linq;
 
 namespace Calc.ConsoleApp
 {
@@ -23,15 +24,12 @@ namespace Calc.ConsoleApp
             TestCalculator(calculator, "4,-3");
             TestCalculator(calculator, "5,");
             TestCalculator(calculator, "5,tytyt");
-
-            try
-            {
-                TestCalculator(calculator, "1,2,3");
-            }
-            catch (ArgumentException ex)
-            {
-                Console.WriteLine($"Input: \"1,2,3\" - Exception: {ex.Message}");
-            }
+            TestCalculator(calculator, "1,2,3");
+            TestCalculator(calculator, "1,2,3,4,5,6,7,8,9,10");
+            
+            // Test with 100 numbers
+            string manyNumbers = string.Join(",", Enumerable.Range(1, 100));
+            TestCalculator(calculator, manyNumbers);
 
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
@@ -49,7 +47,7 @@ namespace Calc.ConsoleApp
             try
             {
                 int result = calculator.Add(input);
-                Console.WriteLine($"Input: \"{input}\" - Result: {result}");
+                Console.WriteLine($"Input: \"{input.Substring(0, Math.Min(input.Length, 20))}{(input.Length > 20 ? "..." : "")}\" - Result: {result}");
             }
             catch (Exception ex)
             {

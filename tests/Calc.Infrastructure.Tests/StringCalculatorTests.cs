@@ -21,8 +21,7 @@ namespace Calc.Infrastructure.Tests
             var defaultStrategy = new DefaultDelimiterStrategy();
             var singleCharStrategy = new SingleCharCustomDelimiterStrategy();
             var delimiterFactory = new DelimiterStrategyFactory(defaultStrategy, singleCharStrategy);
-            var inputParser = new InputParser(delimiterFactory, defaultStrategy);
-            return new StringCalculator(inputParser);
+            return new StringCalculator(delimiterFactory, defaultStrategy);
         }
 
         [Fact]

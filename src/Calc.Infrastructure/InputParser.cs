@@ -1,10 +1,20 @@
 using System;
 using System.Text.RegularExpressions;
+using Calc.Core.Interfaces;
 
 namespace Calc.Infrastructure
 {
     public class InputParser
     {
+        private readonly IDelimiterStrategyFactory _delimiterStrategyFactory;
+        private readonly IDefaultDelimiterStrategy _defaultDelimiterStrategy;
+
+        public InputParser(IDelimiterStrategyFactory delimiterStrategyFactory, IDefaultDelimiterStrategy defaultDelimiterStrategy)
+        {
+            _delimiterStrategyFactory = delimiterStrategyFactory;
+            _defaultDelimiterStrategy = defaultDelimiterStrategy;
+        }
+
         public string[] Parse(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -19,11 +29,12 @@ namespace Calc.Infrastructure
                 {
                     var delimiter = match.Groups[1].Value;
                     var numbers = match.Groups[2].Value;
-                    return numbers.Split(new[] { delimiter }, StringSplitOptions.None);
+                    var strategy = _delimiterStrategyFactory.CreateStrategy(delimiter);
+                    return strategy.Split(numbers);
                 }
             }
 
-            return input.Split(new[] { ',', '\n' }, StringSplitOptions.None);
+            return _defaultDelimiterStrategy.Split(input);
         }
     }
 }

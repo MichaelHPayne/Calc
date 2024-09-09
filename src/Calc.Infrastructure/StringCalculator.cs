@@ -10,9 +10,9 @@ namespace Calc.Infrastructure
         private const int MaxValidNumber = 1000;
         private readonly InputParser _inputParser;
 
-        public StringCalculator(InputParser inputParser)
+        public StringCalculator(IDelimiterStrategyFactory delimiterStrategyFactory, IDefaultDelimiterStrategy defaultDelimiterStrategy)
         {
-            _inputParser = inputParser;
+            _inputParser = new InputParser(delimiterStrategyFactory, defaultDelimiterStrategy);
         }
 
         public int Add(string numbers)

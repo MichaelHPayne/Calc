@@ -21,11 +21,16 @@ namespace Calc.Infrastructure.Tests
         private static IStringCalculator CreateCalculator()
         {
             var mockDefaultStrategy = new Mock<IDefaultDelimiterStrategy>();
+            mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns((string s) => s.Split(new[] { ',', '\n' }, StringSplitOptions.None));
+
             var mockSingleCharStrategy = new Mock<ISingleCharCustomDelimiterStrategy>();
             mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>())).Returns(mockSingleCharStrategy.Object);
-            
-            var delimiterFactory = new DelimiterStrategyFactory(mockDefaultStrategy.Object, mockSingleCharStrategy.Object);
-            return new StringCalculator(delimiterFactory);
+            mockSingleCharStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns((string s) => s.Split(new[] { ',' }, StringSplitOptions.None));
+
+            var mockDelimiterFactory = new Mock<IDelimiterStrategyFactory>();
+            mockDelimiterFactory.Setup(m => m.CreateStrategy(It.IsAny<string>())).Returns(mockDefaultStrategy.Object);
+
+            return new StringCalculator(mockDelimiterFactory.Object);
         }
 
         [Fact]

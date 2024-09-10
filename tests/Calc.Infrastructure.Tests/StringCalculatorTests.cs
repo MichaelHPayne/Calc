@@ -160,7 +160,7 @@ namespace Calc.Infrastructure.Tests
         [Fact]
         public void Add_SingleCharCustomDelimiter_WithNewlineInNumbers_ReturnsSum()
         {
-            int result = _calculator.Add("//;\n1;2\n3");
+            int result = _calculator.Add("//#\n1#2\n3");
             Assert.Equal(6, result);
         }
 

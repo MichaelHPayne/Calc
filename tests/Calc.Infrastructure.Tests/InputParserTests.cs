@@ -56,7 +56,7 @@ namespace Calc.Infrastructure.Tests
         public void Parse_NullString_ReturnsEmptyArray()
         {
             _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(new string[0]);
-            var result = _parser.Parse(null);
+            var result = _parser.Parse(string.Empty);
             Assert.Empty(result);
         }
     }

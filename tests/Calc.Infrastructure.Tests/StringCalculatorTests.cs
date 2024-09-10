@@ -4,6 +4,8 @@ using Calc.Core.Exceptions;
 using Calc.Infrastructure;
 using Calc.Infrastructure.DelimiterStrategies;
 using System.Linq;
+using Moq;
+using Calc.Infrastructure.Factories;
 
 namespace Calc.Infrastructure.Tests
 {
@@ -18,10 +20,12 @@ namespace Calc.Infrastructure.Tests
 
         private static IStringCalculator CreateCalculator()
         {
-            var defaultStrategy = new DefaultDelimiterStrategy();
-            var singleCharStrategy = new SingleCharCustomDelimiterStrategy();
-            var delimiterFactory = new DelimiterStrategyFactory(defaultStrategy, singleCharStrategy);
-            return new StringCalculator(delimiterFactory, defaultStrategy);
+            var mockDefaultStrategy = new Mock<IDefaultDelimiterStrategy>();
+            var mockSingleCharStrategy = new Mock<ISingleCharCustomDelimiterStrategy>();
+            mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>())).Returns(mockSingleCharStrategy.Object);
+            
+            var delimiterFactory = new DelimiterStrategyFactory(mockDefaultStrategy.Object, mockSingleCharStrategy.Object);
+            return new StringCalculator(delimiterFactory);
         }
 
         [Fact]

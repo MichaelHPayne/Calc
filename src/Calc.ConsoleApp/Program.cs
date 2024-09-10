@@ -3,17 +3,23 @@ using Microsoft.Extensions.Hosting;
 using Calc.Core.Interfaces;
 using Calc.Core.Exceptions;
 using Calc.Infrastructure;
+using Calc.Infrastructure.DelimiterStrategies;
+using Calc.Infrastructure.Factories;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace Calc.ConsoleApp
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            var host = CreateHostBuilder(args).Build();
-            var calculator = host.Services.GetRequiredService<IStringCalculator>();
+            using IHost host = CreateHostBuilder(args).Build();
+
+            using IServiceScope serviceScope = host.Services.CreateScope();
+            IServiceProvider provider = serviceScope.ServiceProvider;
+
+            var calculator = provider.GetRequiredService<IStringCalculator>();
 
             Console.WriteLine("String Calculator Demo");
             Console.WriteLine("---------------------");
@@ -40,6 +46,18 @@ namespace Calc.ConsoleApp
             TestCalculator(calculator, "5,1001");
             TestCalculator(calculator, "1001,2000,3000");
             TestCalculator(calculator, "1,1001,2,1002,3,1003,4");
+
+            // New tests for custom delimiters
+            Console.WriteLine("\nCustom Delimiter Tests");
+            Console.WriteLine("---------------------");
+            TestCalculator(calculator, "//;\n1;2;3");
+            TestCalculator(calculator, "//#\n2#5");
+            TestCalculator(calculator, "//,\n2,ff,100");
+            TestCalculator(calculator, "//\n1,2,3");
+            TestCalculator(calculator, "//#\n1#2\n3");
+
+
+            await host.RunAsync();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -47,6 +65,14 @@ namespace Calc.ConsoleApp
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddTransient<IStringCalculator, StringCalculator>();
+                    services.AddTransient<IDelimiterStrategy, DefaultDelimiterStrategy>();
+                    services.AddTransient<IDelimiterStrategy, CustomDelimiterStrategy>();
+                    services.AddTransient<IDelimiterStrategyFactory, DelimiterStrategyFactory>();
+                    services.AddTransient<InputParser>();
+                    
+                    // Add this line to register IDefaultDelimiterStrategy
+                    services.AddTransient<IDefaultDelimiterStrategy, DefaultDelimiterStrategy>();
+                    services.AddTransient<ISingleCharCustomDelimiterStrategy, SingleCharCustomDelimiterStrategy>();
                 });
 
         private static void TestCalculator(IStringCalculator calculator, string input)

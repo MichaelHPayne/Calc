@@ -1,40 +1,48 @@
-using System;
-using System.Text.RegularExpressions;
 using Calc.Core.Interfaces;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Calc.Infrastructure
 {
     public class InputParser
     {
         private readonly IDelimiterStrategyFactory _delimiterStrategyFactory;
-        private readonly IDefaultDelimiterStrategy _defaultDelimiterStrategy;
 
-        public InputParser(IDelimiterStrategyFactory delimiterStrategyFactory, IDefaultDelimiterStrategy defaultDelimiterStrategy)
+        public InputParser(IDelimiterStrategyFactory delimiterStrategyFactory)
         {
-            _delimiterStrategyFactory = delimiterStrategyFactory ?? throw new ArgumentNullException(nameof(delimiterStrategyFactory));
-            _defaultDelimiterStrategy = defaultDelimiterStrategy ?? throw new ArgumentNullException(nameof(defaultDelimiterStrategy));
+            _delimiterStrategyFactory = delimiterStrategyFactory;
         }
 
         public string[] Parse(string input)
         {
-            if (string.IsNullOrEmpty(input))
+            if (string.IsNullOrWhiteSpace(input))
             {
                 return Array.Empty<string>();
             }
 
-            if (input.StartsWith("//"))
+            var (customDelimiter, numbersString) = ExtractCustomDelimiter(input);
+
+            // Split by both the custom delimiter and newline
+            var delimiters = new[] { customDelimiter, "\n" }.Distinct().ToArray();
+            var numbers = Regex.Split(numbersString, string.Join("|", delimiters.Select(Regex.Escape)))
+                              .Where(s => !string.IsNullOrWhiteSpace(s));
+
+            return numbers.ToArray();
+        }
+
+        private (string customDelimiter, string numbersString) ExtractCustomDelimiter(string input)
+        {
+            var customDelimiterRegex = new Regex(@"^//(.|\[.+\])\n(.*)$", RegexOptions.Singleline);
+            var match = customDelimiterRegex.Match(input);
+
+            if (match.Success)
             {
-                var match = Regex.Match(input, @"^//(.)\n(.*)$");
-                if (match.Success)
-                {
-                    var delimiter = match.Groups[1].Value;
-                    var numbers = match.Groups[2].Value;
-                    var strategy = _delimiterStrategyFactory.CreateStrategy(delimiter);
-                    return strategy.Split(numbers);
-                }
+                var delimiter = match.Groups[1].Value;
+                var numbers = match.Groups[2].Value;
+                return (delimiter, numbers);
             }
 
-            return _defaultDelimiterStrategy.Split(input);
+            return (",", input);
         }
     }
 }

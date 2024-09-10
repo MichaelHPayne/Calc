@@ -32,6 +32,7 @@ namespace Calc.Infrastructure.Tests
         [InlineData("//;\n1;2;3", new[] { "1", "2", "3" })]
         [InlineData("1,2\n3", new[] { "1", "2", "3" })]
         [InlineData("//,\n1,2,3", new[] { "1", "2", "3" })]
+        [InlineData("//#\n1#2\n3", new[] { "1", "2", "3" })]
         public void Parse_VariousInputFormats_ReturnsCorrectlySplitArray(string input, string[] expected)
         {
             // Setup the default strategy to return the expected result

@@ -75,6 +75,20 @@ namespace Calc.ConsoleApp
             TestCalculator(calculator, "//,1,2,3");
             TestCalculator(calculator, "//\n1,2,3");
             TestCalculator(calculator, "//#\n1#2\n3");
+
+            // Requirement 7: Multiple custom delimiters of any length
+            Console.WriteLine("\nRequirement 7: Multiple custom delimiters of any length");
+            Console.WriteLine("-----------------------------------------------------");
+            TestCalculator(calculator, "//[*][!!][r9r]\n11r9r22*hh*33!!44");
+            TestCalculator(calculator, "//[###][@@][&&&]\n1###2@@3&&&4");
+            TestCalculator(calculator, "//[;;][**][???]\n1;;2**3???4");
+            TestCalculator(calculator, "//[ab][cd][ef]\n1ab2cd3ef4");
+            TestCalculator(calculator, "//[123][456][789]\n1123245635678974");
+            TestCalculator(calculator, "//[**][++][..]\n100**200++300..400");
+            TestCalculator(calculator, "//[delimiter][separator][divider]\n1delimiter2separator3divider4");
+            TestCalculator(calculator, "//[!@#][#@!][***]\n10!@#20#@!30***40");
+            TestCalculator(calculator, "//[==][!=][<>]\n5==10!=15<>20");
+            TestCalculator(calculator, "//[.][..][...]\n1.2..3...4");
         }
 
         private static void TestCalculator(IStringCalculator calculator, string input)

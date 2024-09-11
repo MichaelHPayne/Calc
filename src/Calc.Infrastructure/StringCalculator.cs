@@ -1,7 +1,6 @@
 using Calc.Core.Interfaces;
 using Calc.Core.Exceptions;
 using System.Linq;
-using System.Diagnostics;
 
 namespace Calc.Infrastructure
 {
@@ -17,39 +16,37 @@ namespace Calc.Infrastructure
 
         public int Add(string numbers)
         {
-            Debug.WriteLine($"StringCalculator.Add called with input: {numbers}");
-
+            // Early return for empty input improves efficiency and readability
             if (string.IsNullOrWhiteSpace(numbers))
             {
-                Debug.WriteLine("Input is null or empty, returning 0");
                 return 0;
             }
 
             var parsedNumbers = _inputParser.Parse(numbers);
-            Debug.WriteLine($"Parsed numbers: {string.Join(", ", parsedNumbers)}");
 
-            var processedNumbers = parsedNumbers
+            // This pipeline handles parsing, filtering, and error checking in a single pass
+            var (validNumbers, negativeNumbers) = parsedNumbers
                 .Select(ParseNumber)
-                .Where(n => n <= MaxValidNumber)
-                .ToList();
+                .Aggregate(
+                    (Valid: new List<int>(), Negative: new List<int>()),
+                    (acc, num) =>
+                    {
+                        if (num < 0) acc.Negative.Add(num);
+                        else if (num <= MaxValidNumber) acc.Valid.Add(num);
+                        return acc;
+                    });
 
-            Debug.WriteLine($"Processed number list: {string.Join(", ", processedNumbers)}");
-
-            var negativeNumbers = processedNumbers.Where(n => n < 0).ToList();
+            // Checking for negative numbers before summing improves error handling
             if (negativeNumbers.Any())
             {
-                Debug.WriteLine($"Negative numbers found: {string.Join(", ", negativeNumbers)}");
                 throw new NegativeNumberException(negativeNumbers);
             }
 
-            var result = processedNumbers.Sum();
-            Debug.WriteLine($"Final result: {result}");
-            return result;
+            return validNumbers.Sum();
         }
 
-        private int ParseNumber(string number)
-        {
-            return int.TryParse(number, out int result) ? result : 0;
-        }
+        // Separate method for number parsing improves readability and maintainability
+        private static int ParseNumber(string number) =>
+            int.TryParse(number, out int result) ? result : 0;
     }
 }

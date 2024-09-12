@@ -116,6 +116,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
+            Assert.True(result == expected, $"Adding '{input}' with newline delimiter should return {expected}, but it returned {result}");
         }
 
         [Fact]
@@ -124,6 +125,7 @@ namespace Calc.Infrastructure.Tests
             string input = string.Join("\n", Enumerable.Range(1, 50)) + "," + string.Join(",", Enumerable.Range(51, 50));
             int result = _calculator.Add(input);
             Assert.Equal(5050, result); // Sum of numbers from 1 to 100
+            Assert.True(result == 5050, $"Adding numbers from 1 to 100 with mixed delimiters should return 5050, but it returned {result}");
         }
 
         [Fact]
@@ -135,6 +137,8 @@ namespace Calc.Infrastructure.Tests
             Assert.Contains("-2", exception.Message);
             Assert.Contains("-4", exception.Message);
             Assert.Contains("-6", exception.Message);
+            Assert.True(exception.NegativeNumbers.SequenceEqual(new[] { -2, -4, -6 }), 
+                $"Exception should contain negative numbers [-2, -4, -6], but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
         }
 
         [Fact]
@@ -144,6 +148,8 @@ namespace Calc.Infrastructure.Tests
             Assert.Equal(new[] { -1 }, exception.NegativeNumbers);
             Assert.Contains("Negatives not allowed:", exception.Message);
             Assert.Contains("-1", exception.Message);
+            Assert.True(exception.NegativeNumbers.SequenceEqual(new[] { -1 }), 
+                $"Exception should contain negative number [-1], but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
         }
 
         [Fact]
@@ -151,6 +157,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("1,2,3");
             Assert.Equal(6, result);
+            Assert.True(result == 6, $"Adding '1,2,3' should return 6, but it returned {result}");
         }
 
         [Theory]

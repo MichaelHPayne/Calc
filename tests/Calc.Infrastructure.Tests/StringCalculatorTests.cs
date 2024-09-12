@@ -258,6 +258,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//[*][!!][r9r]\n*!!r9r");
             Assert.Equal(0, result);
+            Assert.True(result == 0, $"Adding '//[*][!!][r9r]\\n*!!r9r' (only delimiters) should return 0, but it returned {result}");
         }
 
         [Fact]
@@ -265,6 +266,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//[*][!!!][r9r]\n11r9r22*33!!!44");
             Assert.Equal(110, result);
+            Assert.True(result == 110, $"Adding '//[*][!!!][r9r]\\n11r9r22*33!!!44' should return 110, but it returned {result}");
         }
 
         [Fact]
@@ -272,6 +274,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//[*][!!][;]\n11;22*33!!44");
             Assert.Equal(110, result);
+            Assert.True(result == 110, $"Adding '//[*][!!][;]\\n11;22*33!!44' should return 110, but it returned {result}");
         }
 
         [Fact]
@@ -281,6 +284,8 @@ namespace Calc.Infrastructure.Tests
                 () => _calculator.Add("//[*][!!][r9r]\n11r9r22*-33!!44")
             );
             Assert.Contains(-33, exception.NegativeNumbers);
+            Assert.True(exception.NegativeNumbers.Contains(-33), 
+                $"Exception should contain negative number -33, but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
         }
 
         [Fact]
@@ -288,6 +293,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//[*][!!][r9r]\n11r9r1001*33!!44");
             Assert.Equal(88, result);
+            Assert.True(result == 88, $"Adding '//[*][!!][r9r]\\n11r9r1001*33!!44' should return 88 (ignoring 1001), but it returned {result}");
         }
 
         [Fact]

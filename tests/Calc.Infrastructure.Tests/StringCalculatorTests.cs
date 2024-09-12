@@ -6,31 +6,47 @@ using Calc.Infrastructure.DelimiterStrategies;
 using System.Linq;
 using Moq;
 using Calc.Infrastructure.Factories;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Calc.Infrastructure.Tests
 {
-    public class StringCalculatorTests
+    public class StringCalculatorTests : IDisposable
     {
+        private readonly IServiceProvider _serviceProvider;
         private readonly IStringCalculator _calculator;
 
         public StringCalculatorTests()
         {
-            _calculator = CreateCalculator();
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            _serviceProvider = services.BuildServiceProvider();
+            _calculator = _serviceProvider.GetRequiredService<IStringCalculator>();
         }
 
-        private static IStringCalculator CreateCalculator()
+        private void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IStringCalculator, StringCalculator>();
+
             var mockDefaultStrategy = new Mock<IDefaultDelimiterStrategy>();
             mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns((string s) => s.Split(new[] { ',', '\n' }, StringSplitOptions.None));
+            services.AddSingleton(mockDefaultStrategy.Object);
 
             var mockSingleCharStrategy = new Mock<ISingleCharCustomDelimiterStrategy>();
             mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>())).Returns(mockSingleCharStrategy.Object);
             mockSingleCharStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns((string s) => s.Split(new[] { ',' }, StringSplitOptions.None));
+            services.AddSingleton(mockSingleCharStrategy.Object);
 
             var mockDelimiterFactory = new Mock<IDelimiterStrategyFactory>();
             mockDelimiterFactory.Setup(m => m.CreateStrategy(It.IsAny<string>())).Returns(mockDefaultStrategy.Object);
+            services.AddSingleton(mockDelimiterFactory.Object);
+        }
 
-            return new StringCalculator(mockDelimiterFactory.Object);
+        public void Dispose()
+        {
+            if (_serviceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
         }
 
         [Fact]

@@ -46,27 +46,17 @@ namespace Calc.Infrastructure.Tests
             Assert.Equal(expected, result);
         }
 
-        [Fact]
-        public void Parse_EmptyString_ReturnsEmptyArray()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void Parse_NullOrEmptyString_ReturnsEmptyArray(string input)
         {
             // Arrange
-            _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(new string[0]);
+            _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(Array.Empty<string>());
 
             // Act
-            var result = _parser.Parse("");
-
-            // Assert
-            Assert.Empty(result);
-        }
-
-        [Fact]
-        public void Parse_NullString_ReturnsEmptyArray()
-        {
-            // Arrange
-            _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(new string[0]);
-
-            // Act
-            var result = _parser.Parse(null);
+            var result = _parser.Parse(input);
 
             // Assert
             Assert.Empty(result);

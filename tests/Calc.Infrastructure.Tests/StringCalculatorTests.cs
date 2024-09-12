@@ -59,6 +59,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("");
             Assert.Equal(0, result);
+            Assert.True(result == 0, $"Adding an empty string should return 0, but it returned {result}");
         }
 
         [Theory]

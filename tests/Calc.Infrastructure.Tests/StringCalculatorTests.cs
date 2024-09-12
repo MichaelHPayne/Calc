@@ -69,6 +69,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
+            Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
         [Fact]
@@ -76,6 +77,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("5,");
             Assert.Equal(5, result);
+            Assert.True(result == 5, $"Adding '5,' should return 5, but it returned {result}");
         }
 
         [Fact]
@@ -83,6 +85,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("5,tytyt");
             Assert.Equal(5, result);
+            Assert.True(result == 5, $"Adding '5,tytyt' should return 5, but it returned {result}");
         }
 
         [Theory]
@@ -93,6 +96,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
+            Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
         [Fact]
@@ -101,6 +105,7 @@ namespace Calc.Infrastructure.Tests
             string input = string.Join(",", Enumerable.Range(1, 1000));
             int result = _calculator.Add(input);
             Assert.Equal(500500, result); // Sum of numbers from 1 to 1000
+            Assert.True(result == 500500, $"Adding numbers from 1 to 1000 should return 500500, but it returned {result}");
         }
 
         [Theory]

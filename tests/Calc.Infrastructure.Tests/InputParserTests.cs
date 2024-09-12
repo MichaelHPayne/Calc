@@ -4,42 +4,65 @@ using Calc.Infrastructure.DelimiterStrategies;
 using Calc.Infrastructure.Factories;
 using Calc.Core.Interfaces;
 using Moq;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace Calc.Infrastructure.Tests
 {
-    public class InputParserTests
+    public class InputParserTests : IDisposable
     {
-        private readonly Mock<IDefaultDelimiterStrategy> _mockDefaultStrategy;
-        private readonly Mock<ISingleCharCustomDelimiterStrategy> _mockSingleCharStrategy;
-        private readonly IDelimiterStrategyFactory _delimiterStrategyFactory;
+        private readonly IServiceProvider _serviceProvider;
         private readonly InputParser _parser;
         private static readonly string[] EmptyStringArray = Array.Empty<string>();
 
         public InputParserTests()
         {
-            _mockDefaultStrategy = new Mock<IDefaultDelimiterStrategy>();
-            _mockSingleCharStrategy = new Mock<ISingleCharCustomDelimiterStrategy>();
-            
-            // Setup the SingleCharCustomDelimiterStrategy mock
-            _mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>()))
-                .Returns(_mockSingleCharStrategy.Object);
+            var services = new ServiceCollection();
+            ConfigureServices(services);
+            _serviceProvider = services.BuildServiceProvider();
+            _parser = _serviceProvider.GetRequiredService<InputParser>();
+        }
 
-            _delimiterStrategyFactory = new DelimiterStrategyFactory(_mockDefaultStrategy.Object, _mockSingleCharStrategy.Object);
-            _parser = new InputParser(_delimiterStrategyFactory);
+        private void ConfigureServices(IServiceCollection services)
+        {
+            var mockDefaultStrategy = new Mock<IDefaultDelimiterStrategy>();
+            var mockSingleCharStrategy = new Mock<ISingleCharCustomDelimiterStrategy>();
+            var mockDelimiterFactory = new Mock<IDelimiterStrategyFactory>();
+
+            mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>()))
+                .Returns(mockSingleCharStrategy.Object);
+
+            mockDelimiterFactory.Setup(m => m.CreateStrategy(It.IsAny<string>()))
+                .Returns((string input) => input.StartsWith("//") ? mockSingleCharStrategy.Object : mockDefaultStrategy.Object);
+
+            services.AddSingleton(mockDefaultStrategy.Object);
+            services.AddSingleton(mockSingleCharStrategy.Object);
+            services.AddSingleton(mockDelimiterFactory.Object);
+            services.AddTransient<InputParser>();
+        }
+
+        public void Dispose()
+        {
+            if (_serviceProvider is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+
+        public static IEnumerable<object[]> ParseTestData()
+        {
+            yield return new object[] { "1,2,3", new[] { "1", "2", "3" } };
+            yield return new object[] { "1\n2,3", new[] { "1", "2", "3" } };
+            yield return new object[] { "//;\n1;2;3", new[] { "1", "2", "3" } };
+            yield return new object[] { "1,2\n3", new[] { "1", "2", "3" } };
+            yield return new object[] { "//,\n1,2,3", new[] { "1", "2", "3" } };
+            yield return new object[] { "//#\n1#2\n3", new[] { "1", "2", "3" } };
         }
 
         [Theory]
-        [InlineData("1,2,3", new[] { "1", "2", "3" })]
-        [InlineData("1\n2,3", new[] { "1", "2", "3" })]
-        [InlineData("//;\n1;2;3", new[] { "1", "2", "3" })]
-        [InlineData("1,2\n3", new[] { "1", "2", "3" })]
-        [InlineData("//,\n1,2,3", new[] { "1", "2", "3" })]
-        [InlineData("//#\n1#2\n3", new[] { "1", "2", "3" })]
+        [MemberData(nameof(ParseTestData))]
         public void Parse_VariousInputFormats_ReturnsCorrectlySplitArray(string input, string[] expected)
         {
-            // Arrange
-            SetupMockStrategy(input, expected);
-
             // Act
             var result = _parser.Parse(input);
 
@@ -53,26 +76,11 @@ namespace Calc.Infrastructure.Tests
         [InlineData("   ")]
         public void Parse_NullOrEmptyString_ReturnsEmptyArray(string input)
         {
-            // Arrange
-            _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(EmptyStringArray);
-
             // Act
             var result = _parser.Parse(input);
 
             // Assert
             Assert.Empty(result);
-        }
-
-        private void SetupMockStrategy(string input, string[] expected)
-        {
-            if (input.StartsWith("//"))
-            {
-                _mockSingleCharStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(expected);
-            }
-            else
-            {
-                _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(expected);
-            }
         }
     }
 }

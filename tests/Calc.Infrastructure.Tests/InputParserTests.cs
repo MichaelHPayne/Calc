@@ -13,6 +13,7 @@ namespace Calc.Infrastructure.Tests
         private readonly Mock<ISingleCharCustomDelimiterStrategy> _mockSingleCharStrategy;
         private readonly IDelimiterStrategyFactory _delimiterStrategyFactory;
         private readonly InputParser _parser;
+        private static readonly string[] EmptyStringArray = Array.Empty<string>();
 
         public InputParserTests()
         {
@@ -53,7 +54,7 @@ namespace Calc.Infrastructure.Tests
         public void Parse_NullOrEmptyString_ReturnsEmptyArray(string input)
         {
             // Arrange
-            _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(Array.Empty<string>());
+            _mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns(EmptyStringArray);
 
             // Act
             var result = _parser.Parse(input);

@@ -14,6 +14,7 @@ namespace Calc.Infrastructure.Tests
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IStringCalculator _calculator;
+        private static readonly string[] DefaultDelimiters = { ",", "\n" };
 
         public StringCalculatorTests()
         {
@@ -28,16 +29,20 @@ namespace Calc.Infrastructure.Tests
             services.AddTransient<IStringCalculator, StringCalculator>();
 
             var mockDefaultStrategy = new Mock<IDefaultDelimiterStrategy>();
-            mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns((string s) => s.Split(new[] { ',', '\n' }, StringSplitOptions.None));
+            mockDefaultStrategy.Setup(m => m.Split(It.IsAny<string>()))
+                .Returns((string s) => s.Split(DefaultDelimiters, StringSplitOptions.None));
             services.AddSingleton(mockDefaultStrategy.Object);
 
             var mockSingleCharStrategy = new Mock<ISingleCharCustomDelimiterStrategy>();
-            mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>())).Returns(mockSingleCharStrategy.Object);
-            mockSingleCharStrategy.Setup(m => m.Split(It.IsAny<string>())).Returns((string s) => s.Split(new[] { ',' }, StringSplitOptions.None));
+            mockSingleCharStrategy.Setup(m => m.WithDelimiter(It.IsAny<string>()))
+                .Returns(mockSingleCharStrategy.Object);
+            mockSingleCharStrategy.Setup(m => m.Split(It.IsAny<string>()))
+                .Returns((string s) => s.Split(new[] { ',' }, StringSplitOptions.None));
             services.AddSingleton(mockSingleCharStrategy.Object);
 
             var mockDelimiterFactory = new Mock<IDelimiterStrategyFactory>();
-            mockDelimiterFactory.Setup(m => m.CreateStrategy(It.IsAny<string>())).Returns(mockDefaultStrategy.Object);
+            mockDelimiterFactory.Setup(m => m.CreateStrategy(It.IsAny<string>()))
+                .Returns(mockDefaultStrategy.Object);
             services.AddSingleton(mockDelimiterFactory.Object);
         }
 

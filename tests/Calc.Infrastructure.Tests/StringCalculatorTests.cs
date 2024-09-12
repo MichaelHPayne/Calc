@@ -192,14 +192,112 @@ namespace Calc.Infrastructure.Tests
             Assert.Equal(0, result);
         }
 
-    //     [Theory]
-    //     [InlineData("//\n1,2,3")]
-    //     [InlineData("//;\n1,2;3")]
-    //     [InlineData("//;\n1\n2;3")]
-    //     public void Add_MalformedCustomDelimiterInput_UsesDefaultDelimiter(string input)
-    //     {
-    //         int result = _calculator.Add(input);
-    //         Assert.Equal(6, result);
-    //     }
+        // New tests for multiple delimiters of any length (Requirement 8)
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_ReturnsSum()
+        {
+            int result = _calculator.Add("//[*][!!][r9r]\n11r9r22*hh*33!!44");
+            Assert.Equal(110, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_EmptyInput_ReturnsZero()
+        {
+            int result = _calculator.Add("//[*][!!][r9r]\n");
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_OnlyDelimiters_ReturnsZero()
+        {
+            int result = _calculator.Add("//[*][!!][r9r]\n*!!r9r");
+            Assert.Equal(0, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_DifferentLengths_ReturnsSum()
+        {
+            int result = _calculator.Add("//[*][!!!][r9r]\n11r9r22*33!!!44");
+            Assert.Equal(110, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_MixedSingleAndMultiChar_ReturnsSum()
+        {
+            int result = _calculator.Add("//[*][!!][;]\n11;22*33!!44");
+            Assert.Equal(110, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_WithNegativeNumbers_ThrowsException()
+        {
+            var exception = Assert.Throws<NegativeNumberException>(
+                () => _calculator.Add("//[*][!!][r9r]\n11r9r22*-33!!44")
+            );
+            Assert.Contains(-33, exception.NegativeNumbers);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_WithNumbersOver1000_IgnoresLargeNumbers()
+        {
+            int result = _calculator.Add("//[*][!!][r9r]\n11r9r1001*33!!44");
+            Assert.Equal(88, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithDefault_ReturnsSum()
+        {
+            int result = _calculator.Add("1,2\n3");
+            Assert.Equal(6, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithSingleCustom_ReturnsSum()
+        {
+            int result = _calculator.Add("//;\n1;2;3");
+            Assert.Equal(6, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithBrackets_ReturnsSum()
+        {
+            int result = _calculator.Add("//[***]\n1***2***3");
+            Assert.Equal(6, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_InvalidFormat_ThrowsException()
+        {
+            Assert.Throws<InvalidDelimiterException>(() => _calculator.Add("//[*][!!]11*22!!33"));
+        }
+
+// This one fails:
+        [Fact]
+        public void Add_MultipleCustomDelimiters_EmptyDelimiters_ThrowsException()
+        {
+            Assert.Throws<InvalidDelimiterException>(() => _calculator.Add("//[][!!][]\n11!!22!!33"));
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_RegexSpecialCharacters_ReturnsSum()
+        {
+            int result = _calculator.Add("//[*][+][$]\n11*22+33$44");
+            Assert.Equal(110, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_SubstringDelimiters_ReturnsSum()
+        {
+            int result = _calculator.Add("//[**][*]\n11**22*33");
+            Assert.Equal(66, result);
+        }
+
+        [Fact]
+        public void Add_MultipleCustomDelimiters_RepeatedDelimiters_ReturnsSum()
+        {
+            int result = _calculator.Add("//[*][*][!!]\n11*22*33!!44");
+            Assert.Equal(110, result);
+        }
     }
 }

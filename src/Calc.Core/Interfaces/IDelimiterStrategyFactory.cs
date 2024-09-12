@@ -1,3 +1,5 @@
+using System;
+
 namespace Calc.Core.Interfaces
 {
     public interface IDelimiterStrategyFactory

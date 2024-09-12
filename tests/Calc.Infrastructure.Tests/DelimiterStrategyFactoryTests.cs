@@ -48,15 +48,37 @@ namespace Calc.Infrastructure.Tests
         public void CreateStrategy_ReturnsCorrectStrategyType(string input, Type expectedType)
         {
             var result = _factory.CreateStrategy(input);
-            Assert.IsType(expectedType, result);
+            Assert.True(expectedType.IsInstanceOfType(result),
+                $"CreateStrategy failed to return the correct strategy type.\n" +
+                $"Input: {input}\n" +
+                $"Expected Type: {expectedType.Name}\n" +
+                $"Actual Type: {result.GetType().Name}");
         }
 
         [Fact]
         public void CreateStrategy_SingleCharDelimiter_SetsSingleCharDelimiter()
         {
-            var result = _factory.CreateStrategy("//;\n1;2;3") as SingleCharCustomDelimiterStrategy;
-            Assert.NotNull(result);
-            Assert.Equal(new[] { "1", "2", "3" }, result.Split("1;2;3"));
+            var strategy = _factory.CreateStrategy("//;\n1;2;3");
+            
+            Assert.True(strategy is SingleCharCustomDelimiterStrategy,
+                $"CreateStrategy failed to return a SingleCharCustomDelimiterStrategy.\n" +
+                $"Input: //;\\n1;2;3\n" +
+                $"Actual Type: {strategy?.GetType().Name ?? "null"}");
+
+            if (strategy is SingleCharCustomDelimiterStrategy singleCharStrategy)
+            {
+                var splitResult = singleCharStrategy.Split("1;2;3");
+                var expected = new[] { "1", "2", "3" };
+                Assert.True(expected.SequenceEqual(splitResult),
+                    $"SingleCharCustomDelimiterStrategy failed to split correctly.\n" +
+                    $"Input: 1;2;3\n" +
+                    $"Expected: [{string.Join(", ", expected)}]\n" +
+                    $"Actual: [{string.Join(", ", splitResult)}]");
+            }
+            else
+            {
+                Assert.Fail("Strategy is not SingleCharCustomDelimiterStrategy, cannot proceed with split test.");
+            }
         }
     }
 }

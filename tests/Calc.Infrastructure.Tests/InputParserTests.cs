@@ -67,7 +67,8 @@ namespace Calc.Infrastructure.Tests
             var result = _parser.Parse(input);
 
             // Assert
-            Assert.Equal(expected, result);
+            Assert.True(result.SequenceEqual(expected), 
+                $"Parsing '{input}' should return [{string.Join(", ", expected)}], but it returned [{string.Join(", ", result)}]");
         }
 
         [Theory]
@@ -80,7 +81,9 @@ namespace Calc.Infrastructure.Tests
             var result = _parser.Parse(input);
 
             // Assert
-            Assert.Empty(result);
+            Assert.True(result.Length == 0, 
+                $"Parsing '{input ?? "null"}' should return an empty array, but it returned an array with {result.Length} elements: [{string.Join(", ", result)}]");
         }
+
     }
 }

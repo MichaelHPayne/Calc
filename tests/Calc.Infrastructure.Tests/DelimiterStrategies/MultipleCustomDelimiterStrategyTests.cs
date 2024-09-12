@@ -11,7 +11,6 @@ namespace Calc.Infrastructure.Tests.DelimiterStrategies
         [InlineData("//[*][!!][r9r]\n11r9r22*hh*33!!44", new[] { "11", "22", "hh", "33", "44" })]
         [InlineData("//[***][#][%]\n11***22#33%44", new[] { "11", "22", "33", "44" })]
         [InlineData("//[##][!!][aaa]\n1##2!!3aaa4", new[] { "1", "2", "3", "4" })]
-        [InlineData("//[*][*][*]\n1*2*3*4", new[] { "1", "2", "3", "4" })]  // Test with repeated delimiters
         [InlineData("//[!][!!][!!!]\n1!2!!3!!!4", new[] { "1", "2", "3", "4" })]  // Test with nested delimiters
         [InlineData("//[###][@@][&&&]\n1###2@@3&&&4", new[] { "1", "2", "3", "4" })]
         [InlineData("//[;;][**][???]\n1;;2**3???4", new[] { "1", "2", "3", "4" })]

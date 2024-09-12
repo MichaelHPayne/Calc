@@ -89,6 +89,50 @@ namespace Calc.ConsoleApp
             TestCalculator(calculator, "//[!@#][#@!][***]\n10!@#20#@!30***40");
             TestCalculator(calculator, "//[==][!=][<>]\n5==10!=15<>20");
             TestCalculator(calculator, "//[.][..][...]\n1.2..3...4");
+
+            // New tests for Requirement 8: Multiple delimiters of any length
+            Console.WriteLine("\nRequirement 8: Multiple delimiters of any length");
+            Console.WriteLine("-----------------------------------------------");
+            TestCalculator(calculator, "//[*][!!][r9r]\n11r9r22*hh*33!!44");
+            TestCalculator(calculator, "//[delimiter1][delimiter2][delimiter3]\n1delimiter12delimiter23delimiter34");
+            TestCalculator(calculator, "//[**][+++][====]\n1**2+++3====4");
+            TestCalculator(calculator, "//[a][bb][ccc]\n1a2bb3ccc4");
+            TestCalculator(calculator, "//[123][4567][89]\n1123245673894");
+            TestCalculator(calculator, "//[.][,][$]\n1.2,3$4");
+            TestCalculator(calculator, "//[||][&&][##]\n1||2&&3##4");
+            
+            // Test backward compatibility
+            Console.WriteLine("\nBackward Compatibility Tests");
+            Console.WriteLine("----------------------------");
+            TestCalculator(calculator, "1,2,3");
+            TestCalculator(calculator, "1\n2,3");
+            TestCalculator(calculator, "//;\n1;2;3");
+            TestCalculator(calculator, "//[***]\n1***2***3");
+
+            // Test example case in requirement
+            Console.WriteLine("\nexample cases in requirement");
+
+            Console.WriteLine("\nRequirement #2: Remove the maximum constraint for numbers");
+            TestCalculator(calculator, "1,2,3,4,5,6,7,8,9,10,11,12"); // returns 78
+
+            Console.WriteLine("\nRequirement #3: Support a newline character as an alternative delimiter");
+            TestCalculator(calculator, "1\n2,3"); // returns 6
+
+            Console.WriteLine("\nRequirement #4: Deny negative numbers by throwing an exception that includes all of the negative numbersprovided");
+            TestCalculator(calculator, "2,-3,6"); // Throws exception
+
+            Console.WriteLine("\nRequirement #5: Make any value greater than 1000 an invalid number");
+            TestCalculator(calculator, "2,1005,6"); // returns 8
+
+            Console.WriteLine("\nRequirement #6: Support 1 custom delimiter of a single character using the format: //{delimiter}\n{numbers}");
+            TestCalculator(calculator, "//#\n2#5"); // returns 7
+            TestCalculator(calculator, "//,\n2,ff,100"); // returns 102
+
+            Console.WriteLine("\nRequirement #7: Support 1 custom delimiter of any length using the format: //[{delimiter}]\n{numbers}");
+            TestCalculator(calculator, "//[***]\n11***22***33"); // returns 66
+
+            Console.WriteLine("\nRequirement #8: Support multiple delimiters of any length using the format: //[{delimiter1}][{delimiter2}]...\n{numbers}");
+            TestCalculator(calculator, "//[*][!!][r9r]\n11r9r22*hh*33!!44");
         }
 
         private static void TestCalculator(IStringCalculator calculator, string input)

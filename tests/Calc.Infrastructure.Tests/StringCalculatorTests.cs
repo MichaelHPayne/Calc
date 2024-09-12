@@ -58,7 +58,7 @@ namespace Calc.Infrastructure.Tests
         public void Add_EmptyString_ShouldReturnZero()
         {
             int result = _calculator.Add("");
-            Assert.Equal(0, result);
+            // Assert.Equal(0, result);
             Assert.True(result == 0, $"Adding an empty string should return 0, but it returned {result}");
         }
 
@@ -76,7 +76,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MissingNumber_ShouldTreatAsZero()
         {
             int result = _calculator.Add("5,");
-            Assert.Equal(5, result);
             Assert.True(result == 5, $"Adding '5,' should return 5, but it returned {result}");
         }
 
@@ -84,7 +83,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_InvalidNumber_ShouldTreatAsZero()
         {
             int result = _calculator.Add("5,tytyt");
-            Assert.Equal(5, result);
             Assert.True(result == 5, $"Adding '5,tytyt' should return 5, but it returned {result}");
         }
 
@@ -95,7 +93,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleNumbers_ShouldReturnSum(string input, int expected)
         {
             int result = _calculator.Add(input);
-            Assert.Equal(expected, result);
             Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
@@ -104,7 +101,6 @@ namespace Calc.Infrastructure.Tests
         {
             string input = string.Join(",", Enumerable.Range(1, 1000));
             int result = _calculator.Add(input);
-            Assert.Equal(500500, result); // Sum of numbers from 1 to 1000
             Assert.True(result == 500500, $"Adding numbers from 1 to 1000 should return 500500, but it returned {result}");
         }
 
@@ -115,7 +111,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_NewlineDelimiter_ShouldReturnSum(string input, int expected)
         {
             int result = _calculator.Add(input);
-            Assert.Equal(expected, result);
             Assert.True(result == expected, $"Adding '{input}' with newline delimiter should return {expected}, but it returned {result}");
         }
 
@@ -124,39 +119,49 @@ namespace Calc.Infrastructure.Tests
         {
             string input = string.Join("\n", Enumerable.Range(1, 50)) + "," + string.Join(",", Enumerable.Range(51, 50));
             int result = _calculator.Add(input);
-            Assert.Equal(5050, result); // Sum of numbers from 1 to 100
             Assert.True(result == 5050, $"Adding numbers from 1 to 100 with mixed delimiters should return 5050, but it returned {result}");
         }
 
         [Fact]
         public void Add_NegativeNumbers_ShouldThrowNegativeNumberException()
         {
+            // Act & Assert
             var exception = Assert.Throws<NegativeNumberException>(() => _calculator.Add("1,-2,3,-4,5,-6"));
-            Assert.Equal(new[] { -2, -4, -6 }, exception.NegativeNumbers);
-            Assert.Contains("Negatives not allowed:", exception.Message);
-            Assert.Contains("-2", exception.Message);
-            Assert.Contains("-4", exception.Message);
-            Assert.Contains("-6", exception.Message);
-            Assert.True(exception.NegativeNumbers.SequenceEqual(new[] { -2, -4, -6 }), 
-                $"Exception should contain negative numbers [-2, -4, -6], but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
+
+            // Assert
+            var expectedNegatives = new[] { -2, -4, -6 };
+            Assert.True(
+                exception.NegativeNumbers.SequenceEqual(expectedNegatives) &&
+                exception.Message.Contains("Negatives not allowed:") &&
+                expectedNegatives.All(n => exception.Message.Contains(n.ToString())),
+                $"Exception should contain message 'Negatives not allowed:' and negative numbers {string.Join(", ", expectedNegatives)}, " +
+                $"but the actual message was '{exception.Message}' " +
+                $"and the actual negative numbers were [{string.Join(", ", exception.NegativeNumbers)}]"
+            );
         }
 
         [Fact]
         public void Add_SingleNegativeNumber_ShouldThrowNegativeNumberException()
         {
+            // Act & Assert
             var exception = Assert.Throws<NegativeNumberException>(() => _calculator.Add("-1"));
-            Assert.Equal(new[] { -1 }, exception.NegativeNumbers);
-            Assert.Contains("Negatives not allowed:", exception.Message);
-            Assert.Contains("-1", exception.Message);
-            Assert.True(exception.NegativeNumbers.SequenceEqual(new[] { -1 }), 
-                $"Exception should contain negative number [-1], but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
+
+            // Assert
+            var expectedNegative = -1;
+            Assert.True(
+                exception.NegativeNumbers.SequenceEqual(new[] { expectedNegative }) &&
+                exception.Message.Contains("Negatives not allowed:") &&
+                exception.Message.Contains(expectedNegative.ToString()),
+                $"Exception should contain message 'Negatives not allowed:' and negative number {expectedNegative}, " +
+                $"but the actual message was '{exception.Message}' " +
+                $"and the actual negative numbers were [{string.Join(", ", exception.NegativeNumbers)}]"
+            );
         }
 
         [Fact]
         public void Add_NoNegativeNumbers_ShouldNotThrowException()
         {
             int result = _calculator.Add("1,2,3");
-            Assert.Equal(6, result);
             Assert.True(result == 6, $"Adding '1,2,3' should return 6, but it returned {result}");
         }
 
@@ -169,7 +174,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_NumbersGreaterThan1000_ShouldBeIgnored(string input, int expected)
         {
             int result = _calculator.Add(input);
-            Assert.Equal(expected, result);
             Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
@@ -177,7 +181,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_AllNumbersGreaterThan1000_ShouldReturnZero()
         {
             int result = _calculator.Add("1001,2000,3000");
-            Assert.Equal(0, result);
             Assert.True(result == 0, $"Adding '1001,2000,3000' should return 0, but it returned {result}");
         }
 
@@ -185,7 +188,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MixOfValidAndInvalidNumbers_ShouldReturnCorrectSum()
         {
             int result = _calculator.Add("1,1001,2,1002,3,1003,4");
-            Assert.Equal(10, result);
             Assert.True(result == 10, $"Adding '1,1001,2,1002,3,1003,4' should return 10, but it returned {result}");
         }        
 
@@ -196,7 +198,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_SingleCharCustomDelimiter_ShouldReturnSum(string input, int expected)
         {
             int result = _calculator.Add(input);
-            Assert.Equal(expected, result);
             Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
@@ -204,7 +205,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_SingleCharCustomDelimiter_WithNewlineInNumbers_ShouldReturnSum()
         {
             int result = _calculator.Add("//;\n1;2;1001;3");
-            Assert.Equal(6, result);
             Assert.True(result == 6, $"Adding '//;\\n1;2;1001;3' should return 6, but it returned {result}");
         }
 
@@ -214,7 +214,6 @@ namespace Calc.Infrastructure.Tests
             var exception = Assert.Throws<NegativeNumberException>(
                 () => _calculator.Add("//;\n1;-2;3;-4;5;-6")
             );
-            Assert.Equal(new[] { -2, -4, -6 }, exception.NegativeNumbers);
             Assert.True(exception.NegativeNumbers.SequenceEqual(new[] { -2, -4, -6 }),
                 $"Exception should contain negative numbers [-2, -4, -6], but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
         }
@@ -223,7 +222,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_SingleCharCustomDelimiter_WithNumbersOver1000_ShouldIgnoreLargeNumbers()
         {
             int result = _calculator.Add("//;\n1;2;1001;3");
-            Assert.Equal(6, result);
             Assert.True(result == 6, $"Adding '//;\\n1;2;1001;3' should return 6 (ignoring 1001), but it returned {result}");
         }
 
@@ -231,7 +229,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_SingleCharCustomDelimiter_EmptyInput_ShouldReturnZero()
         {
             int result = _calculator.Add("//;\n");
-            Assert.Equal(0, result);
             Assert.True(result == 0, $"Adding '//;\\n' (empty input) should return 0, but it returned {result}");
         }
 
@@ -241,7 +238,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleCustomDelimiters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n11r9r22*hh*33!!44");
-            Assert.Equal(110, result);
             Assert.True(result == 110, $"Adding '//[*][!!][r9r]\\n11r9r22*hh*33!!44' should return 110, but it returned {result}");
         }
 
@@ -249,7 +245,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleCustomDelimiters_EmptyInput_ShouldReturnZero()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n");
-            Assert.Equal(0, result);
             Assert.True(result == 0, $"Adding '//[*][!!][r9r]\\n' (empty input) should return 0, but it returned {result}");
         }
 
@@ -257,7 +252,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleCustomDelimiters_OnlyDelimiters_ShouldReturnZero()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n*!!r9r");
-            Assert.Equal(0, result);
             Assert.True(result == 0, $"Adding '//[*][!!][r9r]\\n*!!r9r' (only delimiters) should return 0, but it returned {result}");
         }
 
@@ -265,7 +259,6 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleCustomDelimiters_DifferentLengths_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][!!!][r9r]\n11r9r22*33!!!44");
-            Assert.Equal(110, result);
             Assert.True(result == 110, $"Adding '//[*][!!!][r9r]\\n11r9r22*33!!!44' should return 110, but it returned {result}");
         }
 
@@ -273,26 +266,33 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleCustomDelimiters_MixedSingleAndMultiChar_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][!!][;]\n11;22*33!!44");
-            Assert.Equal(110, result);
             Assert.True(result == 110, $"Adding '//[*][!!][;]\\n11;22*33!!44' should return 110, but it returned {result}");
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_WithNegativeNumbers_ShouldThrowException()
         {
+            // Act & Assert
             var exception = Assert.Throws<NegativeNumberException>(
                 () => _calculator.Add("//[*][!!][r9r]\n11r9r22*-33!!44")
             );
-            Assert.Contains(-33, exception.NegativeNumbers);
-            Assert.True(exception.NegativeNumbers.Contains(-33), 
-                $"Exception should contain negative number -33, but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
+
+            // Assert
+            var expectedNegative = -33;
+            Assert.True(
+                exception.NegativeNumbers.Contains(expectedNegative) &&
+                exception.Message.Contains("Negatives not allowed:") &&
+                exception.Message.Contains(expectedNegative.ToString()),
+                $"Exception should contain message 'Negatives not allowed:' and negative number {expectedNegative}, " +
+                $"but the actual message was '{exception.Message}' " +
+                $"and the actual negative numbers were [{string.Join(", ", exception.NegativeNumbers)}]"
+            );
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_WithNumbersOver1000_ShouldIgnoreLargeNumbers()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n11r9r1001*33!!44");
-            Assert.Equal(88, result);
             Assert.True(result == 88, $"Adding '//[*][!!][r9r]\\n11r9r1001*33!!44' should return 88 (ignoring 1001), but it returned {result}");
         }
 
@@ -300,55 +300,74 @@ namespace Calc.Infrastructure.Tests
         public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithDefault_ShouldReturnSum()
         {
             int result = _calculator.Add("1,2\n3");
-            Assert.Equal(6, result);
+            Assert.True(result == 6, $"Adding '1,2\\n3' should return 6, but it returned {result}");
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithSingleCustom_ShouldReturnSum()
         {
             int result = _calculator.Add("//;\n1;2;3");
-            Assert.Equal(6, result);
+            Assert.True(result == 6, $"Adding '//;\\n1;2;3' should return 6, but it returned {result}");
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithBrackets_ShouldReturnSum()
         {
             int result = _calculator.Add("//[***]\n1***2***3");
-            Assert.Equal(6, result);
+            Assert.True(result == 6, $"Adding '//[***]\\n1***2***3' should return 6, but it returned {result}");
         }
 
-        [Fact]
-        public void Add_MultipleCustomDelimiters_InvalidFormat_ShouldThrowException()
+        [Theory]
+        [InlineData("//[*][!!]11*22!!33")]
+        public void Add_MultipleCustomDelimiters_InvalidFormat_ShouldThrowException(string input)
         {
-            Assert.Throws<InvalidDelimiterException>(() => _calculator.Add("//[*][!!]11*22!!33"));
+            var exception = Assert.Throws<InvalidDelimiterException>(() => _calculator.Add(input));
+            
+            Assert.True(
+                exception.Message.Contains("Invalid format for multiple custom delimiters") &&
+                exception.InvalidDelimiter == input,
+                $"Expected exception message to contain 'Invalid format for multiple custom delimiters' and InvalidDelimiter to be '{input}', " +
+                $"but got message '{exception.Message}' and InvalidDelimiter '{exception.InvalidDelimiter}'"
+            );
         }
 
-// This one fails:
         [Fact]
         public void Add_MultipleCustomDelimiters_EmptyDelimiters_ShouldThrowException()
         {
-            Assert.Throws<InvalidDelimiterException>(() => _calculator.Add("//[][!!][]\n11!!22!!33"));
+            // Arrange
+            string input = "//[][!!][]\n11!!22!!33";
+
+            // Act & Assert
+            var exception = Assert.Throws<InvalidDelimiterException>(() => _calculator.Add(input));
+
+            // Assert
+            Assert.True(
+                exception.Message.Contains("Delimiter cannot be empty") &&
+                exception.InvalidDelimiter == "",
+                $"Expected exception message to contain 'Delimiter cannot be empty' and InvalidDelimiter to be empty, " +
+                $"but got message '{exception.Message}' and InvalidDelimiter '{exception.InvalidDelimiter}'"
+            );
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_RegexSpecialCharacters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][+][$]\n11*22+33$44");
-            Assert.Equal(110, result);
+            Assert.True(result == 110, $"Adding '//[*][+][$]\\n11*22+33$44' with regex special characters as delimiters should return 110, but it returned {result}");
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_SubstringDelimiters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[**][*]\n11**22*33");
-            Assert.Equal(66, result);
+            Assert.True(result == 66, $"Adding '//[**][*]\\n11**22*33' with substring delimiters should return 66, but it returned {result}");
         }
 
         [Fact]
         public void Add_MultipleCustomDelimiters_RepeatedDelimiters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][*][!!]\n11*22*33!!44");
-            Assert.Equal(110, result);
+            Assert.True(result == 110, $"Adding '//[*][*][!!]\\n11*22*33!!44' with repeated delimiters should return 110, but it returned {result}");
         }
     }
 }

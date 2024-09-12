@@ -44,7 +44,11 @@ namespace Calc.Infrastructure.Tests
         {
             var strategy = _serviceProvider.GetRequiredService<IDefaultDelimiterStrategy>();
             var result = strategy.Split(input);
-            Assert.Equal(expected, result);
+            Assert.True(result.SequenceEqual(expected), 
+                $"DefaultDelimiterStrategy failed to split correctly.\n" +
+                $"Input: {input}\n" +
+                $"Expected: [{string.Join(", ", expected)}]\n" +
+                $"Actual: [{string.Join(", ", result)}]");
         }
 
         public static IEnumerable<object[]> SingleCharCustomDelimiterTestData()
@@ -61,7 +65,11 @@ namespace Calc.Infrastructure.Tests
             var strategy = _serviceProvider.GetRequiredService<ISingleCharCustomDelimiterStrategy>();
             strategy.WithDelimiter(";");
             var result = strategy.Split(input);
-            Assert.Equal(expected, result);
+            Assert.True(result.SequenceEqual(expected), 
+                $"SingleCharCustomDelimiterStrategy failed to split correctly.\n" +
+                $"Input: {input}\n" +
+                $"Expected: [{string.Join(", ", expected)}]\n" +
+                $"Actual: [{string.Join(", ", result)}]");
         }
     }
 }

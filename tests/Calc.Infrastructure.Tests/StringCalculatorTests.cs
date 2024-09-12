@@ -170,6 +170,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
+            Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
         [Fact]
@@ -177,6 +178,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("1001,2000,3000");
             Assert.Equal(0, result);
+            Assert.True(result == 0, $"Adding '1001,2000,3000' should return 0, but it returned {result}");
         }
 
         [Fact]
@@ -184,6 +186,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("1,1001,2,1002,3,1003,4");
             Assert.Equal(10, result);
+            Assert.True(result == 10, $"Adding '1,1001,2,1002,3,1003,4' should return 10, but it returned {result}");
         }        
 
         [Theory]
@@ -194,6 +197,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
+            Assert.True(result == expected, $"Adding '{input}' should return {expected}, but it returned {result}");
         }
 
         [Fact]
@@ -201,6 +205,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//;\n1;2;1001;3");
             Assert.Equal(6, result);
+            Assert.True(result == 6, $"Adding '//;\\n1;2;1001;3' should return 6, but it returned {result}");
         }
 
         [Fact]

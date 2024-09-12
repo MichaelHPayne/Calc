@@ -61,7 +61,7 @@ namespace Calc.Infrastructure.Tests
 
         [Theory]
         [MemberData(nameof(ParseTestData))]
-        public void Parse_VariousInputFormats_ReturnsCorrectlySplitArray(string input, string[] expected)
+        public void Parse_VariousInputFormats_ShouldReturnCorrectlySplitArray(string input, string[] expected)
         {
             // Act
             var result = _parser.Parse(input);
@@ -74,7 +74,7 @@ namespace Calc.Infrastructure.Tests
         [InlineData(null)]
         [InlineData("")]
         [InlineData("   ")]
-        public void Parse_NullOrEmptyString_ReturnsEmptyArray(string input)
+        public void Parse_NullOrEmptyString_ShouldReturnEmptyArray(string input)
         {
             // Act
             var result = _parser.Parse(input);

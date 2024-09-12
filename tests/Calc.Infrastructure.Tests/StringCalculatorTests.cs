@@ -55,7 +55,7 @@ namespace Calc.Infrastructure.Tests
         }
 
         [Fact]
-        public void Add_EmptyString_ReturnsZero()
+        public void Add_EmptyString_ShouldReturnZero()
         {
             int result = _calculator.Add("");
             Assert.Equal(0, result);
@@ -64,21 +64,21 @@ namespace Calc.Infrastructure.Tests
         [Theory]
         [InlineData("1", 1)]
         [InlineData("20", 20)]
-        public void Add_SingleNumber_ReturnsNumber(string input, int expected)
+        public void Add_SingleNumber_ShouldReturnSameNumber(string input, int expected)
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public void Add_MissingNumber_TreatsAsZero()
+        public void Add_MissingNumber_ShouldTreatAsZero()
         {
             int result = _calculator.Add("5,");
             Assert.Equal(5, result);
         }
 
         [Fact]
-        public void Add_InvalidNumber_TreatsAsZero()
+        public void Add_InvalidNumber_ShouldTreatAsZero()
         {
             int result = _calculator.Add("5,tytyt");
             Assert.Equal(5, result);
@@ -88,14 +88,14 @@ namespace Calc.Infrastructure.Tests
         [InlineData("1,2,3", 6)]
         [InlineData("1,2,3,4,5", 15)]
         [InlineData("1,2,3,4,5,6,7,8,9,10,11,12", 78)]
-        public void Add_MultipleNumbers_ReturnsSum(string input, int expected)
+        public void Add_MultipleNumbers_ShouldReturnSum(string input, int expected)
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public void Add_ManyNumbers_ReturnsCorrectSum()
+        public void Add_ManyNumbers_ShouldReturnCorrectSum()
         {
             string input = string.Join(",", Enumerable.Range(1, 1000));
             int result = _calculator.Add(input);
@@ -106,14 +106,14 @@ namespace Calc.Infrastructure.Tests
         [InlineData("1\n2,3", 6)]
         [InlineData("1,2\n3", 6)]
         [InlineData("1\n2\n3", 6)]
-        public void Add_NewlineDelimiter_ReturnsSum(string input, int expected)
+        public void Add_NewlineDelimiter_ShouldReturnSum(string input, int expected)
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public void Add_MixedDelimiters_ReturnsSum()
+        public void Add_MixedDelimiters_ShouldReturnSum()
         {
             string input = string.Join("\n", Enumerable.Range(1, 50)) + "," + string.Join(",", Enumerable.Range(51, 50));
             int result = _calculator.Add(input);
@@ -121,7 +121,7 @@ namespace Calc.Infrastructure.Tests
         }
 
         [Fact]
-        public void Add_NegativeNumbers_ThrowsNegativeNumberException()
+        public void Add_NegativeNumbers_ShouldThrowNegativeNumberException()
         {
             var exception = Assert.Throws<NegativeNumberException>(() => _calculator.Add("1,-2,3,-4,5,-6"));
             Assert.Equal(new[] { -2, -4, -6 }, exception.NegativeNumbers);
@@ -132,7 +132,7 @@ namespace Calc.Infrastructure.Tests
         }
 
         [Fact]
-        public void Add_SingleNegativeNumber_ThrowsNegativeNumberException()
+        public void Add_SingleNegativeNumber_ShouldThrowNegativeNumberException()
         {
             var exception = Assert.Throws<NegativeNumberException>(() => _calculator.Add("-1"));
             Assert.Equal(new[] { -1 }, exception.NegativeNumbers);
@@ -141,7 +141,7 @@ namespace Calc.Infrastructure.Tests
         }
 
         [Fact]
-        public void Add_NoNegativeNumbers_DoesNotThrowException()
+        public void Add_NoNegativeNumbers_ShouldNotThrowException()
         {
             int result = _calculator.Add("1,2,3");
             Assert.Equal(6, result);
@@ -153,21 +153,21 @@ namespace Calc.Infrastructure.Tests
         [InlineData("999,1001,2", 1001)]
         [InlineData("1,2,3,1001,4,1002,5", 15)]
         [InlineData("5,1001", 5)]  // New test case for two numbers with one > 1000
-        public void Add_NumbersGreaterThan1000_AreIgnored(string input, int expected)
+        public void Add_NumbersGreaterThan1000_ShouldBeIgnored(string input, int expected)
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public void Add_AllNumbersGreaterThan1000_ReturnsZero()
+        public void Add_AllNumbersGreaterThan1000_ShouldReturnZero()
         {
             int result = _calculator.Add("1001,2000,3000");
             Assert.Equal(0, result);
         }
 
         [Fact]
-        public void Add_MixOfValidAndInvalidNumbers_ReturnsCorrectSum()
+        public void Add_MixOfValidAndInvalidNumbers_ShouldReturnCorrectSum()
         {
             int result = _calculator.Add("1,1001,2,1002,3,1003,4");
             Assert.Equal(10, result);
@@ -177,21 +177,21 @@ namespace Calc.Infrastructure.Tests
         [InlineData("//;\n1;2", 3)]
         [InlineData("//#\n2#5", 7)]
         [InlineData("//,\n2,ff,100", 102)]
-        public void Add_SingleCharCustomDelimiter_ReturnsSum(string input, int expected)
+        public void Add_SingleCharCustomDelimiter_ShouldReturnSum(string input, int expected)
         {
             int result = _calculator.Add(input);
             Assert.Equal(expected, result);
         }
 
         [Fact]
-        public void Add_SingleCharCustomDelimiter_WithNewlineInNumbers_ReturnsSum()
+        public void Add_SingleCharCustomDelimiter_WithNewlineInNumbers_ShouldReturnSum()
         {
             int result = _calculator.Add("//;\n1;2;1001;3");
             Assert.Equal(6, result);
         }
 
         [Fact]
-        public void Add_SingleCharCustomDelimiter_WithNegativeNumbers_ThrowsException()
+        public void Add_SingleCharCustomDelimiter_WithNegativeNumbers_ShouldThrowException()
         {
             var exception = Assert.Throws<NegativeNumberException>(
                 () => _calculator.Add("//;\n1;-2;3;-4;5;-6")
@@ -200,14 +200,14 @@ namespace Calc.Infrastructure.Tests
         }
 
         [Fact]
-        public void Add_SingleCharCustomDelimiter_WithNumbersOver1000_IgnoresLargeNumbers()
+        public void Add_SingleCharCustomDelimiter_WithNumbersOver1000_ShouldIgnoreLargeNumbers()
         {
             int result = _calculator.Add("//;\n1;2;1001;3");
             Assert.Equal(6, result);
         }
 
         [Fact]
-        public void Add_SingleCharCustomDelimiter_EmptyInput_ReturnsZero()
+        public void Add_SingleCharCustomDelimiter_EmptyInput_ShouldReturnZero()
         {
             int result = _calculator.Add("//;\n");
             Assert.Equal(0, result);
@@ -216,42 +216,42 @@ namespace Calc.Infrastructure.Tests
         // New tests for multiple delimiters of any length (Requirement 8)
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n11r9r22*hh*33!!44");
             Assert.Equal(110, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_EmptyInput_ReturnsZero()
+        public void Add_MultipleCustomDelimiters_EmptyInput_ShouldReturnZero()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n");
             Assert.Equal(0, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_OnlyDelimiters_ReturnsZero()
+        public void Add_MultipleCustomDelimiters_OnlyDelimiters_ShouldReturnZero()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n*!!r9r");
             Assert.Equal(0, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_DifferentLengths_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_DifferentLengths_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][!!!][r9r]\n11r9r22*33!!!44");
             Assert.Equal(110, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_MixedSingleAndMultiChar_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_MixedSingleAndMultiChar_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][!!][;]\n11;22*33!!44");
             Assert.Equal(110, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_WithNegativeNumbers_ThrowsException()
+        public void Add_MultipleCustomDelimiters_WithNegativeNumbers_ShouldThrowException()
         {
             var exception = Assert.Throws<NegativeNumberException>(
                 () => _calculator.Add("//[*][!!][r9r]\n11r9r22*-33!!44")
@@ -260,62 +260,62 @@ namespace Calc.Infrastructure.Tests
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_WithNumbersOver1000_IgnoresLargeNumbers()
+        public void Add_MultipleCustomDelimiters_WithNumbersOver1000_ShouldIgnoreLargeNumbers()
         {
             int result = _calculator.Add("//[*][!!][r9r]\n11r9r1001*33!!44");
             Assert.Equal(88, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithDefault_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithDefault_ShouldReturnSum()
         {
             int result = _calculator.Add("1,2\n3");
             Assert.Equal(6, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithSingleCustom_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithSingleCustom_ShouldReturnSum()
         {
             int result = _calculator.Add("//;\n1;2;3");
             Assert.Equal(6, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithBrackets_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_BackwardCompatibilityWithBrackets_ShouldReturnSum()
         {
             int result = _calculator.Add("//[***]\n1***2***3");
             Assert.Equal(6, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_InvalidFormat_ThrowsException()
+        public void Add_MultipleCustomDelimiters_InvalidFormat_ShouldThrowException()
         {
             Assert.Throws<InvalidDelimiterException>(() => _calculator.Add("//[*][!!]11*22!!33"));
         }
 
 // This one fails:
         [Fact]
-        public void Add_MultipleCustomDelimiters_EmptyDelimiters_ThrowsException()
+        public void Add_MultipleCustomDelimiters_EmptyDelimiters_ShouldThrowException()
         {
             Assert.Throws<InvalidDelimiterException>(() => _calculator.Add("//[][!!][]\n11!!22!!33"));
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_RegexSpecialCharacters_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_RegexSpecialCharacters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][+][$]\n11*22+33$44");
             Assert.Equal(110, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_SubstringDelimiters_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_SubstringDelimiters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[**][*]\n11**22*33");
             Assert.Equal(66, result);
         }
 
         [Fact]
-        public void Add_MultipleCustomDelimiters_RepeatedDelimiters_ReturnsSum()
+        public void Add_MultipleCustomDelimiters_RepeatedDelimiters_ShouldReturnSum()
         {
             int result = _calculator.Add("//[*][*][!!]\n11*22*33!!44");
             Assert.Equal(110, result);

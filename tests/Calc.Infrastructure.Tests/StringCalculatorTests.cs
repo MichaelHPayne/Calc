@@ -215,6 +215,8 @@ namespace Calc.Infrastructure.Tests
                 () => _calculator.Add("//;\n1;-2;3;-4;5;-6")
             );
             Assert.Equal(new[] { -2, -4, -6 }, exception.NegativeNumbers);
+            Assert.True(exception.NegativeNumbers.SequenceEqual(new[] { -2, -4, -6 }),
+                $"Exception should contain negative numbers [-2, -4, -6], but it contained [{string.Join(", ", exception.NegativeNumbers)}]");
         }
 
         [Fact]
@@ -222,6 +224,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//;\n1;2;1001;3");
             Assert.Equal(6, result);
+            Assert.True(result == 6, $"Adding '//;\\n1;2;1001;3' should return 6 (ignoring 1001), but it returned {result}");
         }
 
         [Fact]
@@ -229,6 +232,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//;\n");
             Assert.Equal(0, result);
+            Assert.True(result == 0, $"Adding '//;\\n' (empty input) should return 0, but it returned {result}");
         }
 
         // New tests for multiple delimiters of any length (Requirement 8)
@@ -238,6 +242,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//[*][!!][r9r]\n11r9r22*hh*33!!44");
             Assert.Equal(110, result);
+            Assert.True(result == 110, $"Adding '//[*][!!][r9r]\\n11r9r22*hh*33!!44' should return 110, but it returned {result}");
         }
 
         [Fact]
@@ -245,6 +250,7 @@ namespace Calc.Infrastructure.Tests
         {
             int result = _calculator.Add("//[*][!!][r9r]\n");
             Assert.Equal(0, result);
+            Assert.True(result == 0, $"Adding '//[*][!!][r9r]\\n' (empty input) should return 0, but it returned {result}");
         }
 
         [Fact]
